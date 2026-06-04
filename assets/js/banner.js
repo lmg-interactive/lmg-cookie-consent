@@ -154,6 +154,16 @@
     root = document.getElementById('m-consent');
     if (!root) return;
 
+    // Re-parent to <body> so the fixed banner/modal escape any transformed or
+    // clipped ancestor. CSS `position: fixed` resolves against the nearest
+    // ancestor with a transform/filter/perspective (not the viewport), so a
+    // smooth-scroll wrapper like GSAP ScrollSmoother's `.smooth-content`
+    // (which gets a translate3d transform) would otherwise pin the banner
+    // inside the scrolling content instead of to the screen.
+    if (document.body && root.parentNode !== document.body) {
+      document.body.appendChild(root);
+    }
+
     var body = root.querySelector('[data-m-consent-categories]');
     if (body) {
       while (body.firstChild) body.removeChild(body.firstChild);
