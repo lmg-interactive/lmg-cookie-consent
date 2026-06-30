@@ -5,5 +5,8 @@
 *.swp
 *~
 
+# Playwright MCP session artifacts
+.playwright-mcp/
+
 # Note: vendor/ is intentionally COMMITTED (the update library ships with the
 # plugin so no Composer is needed on any site). Do not ignore it.
