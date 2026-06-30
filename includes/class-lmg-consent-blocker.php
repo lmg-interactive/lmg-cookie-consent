@@ -14,10 +14,19 @@ final class LMG_Consent_Blocker {
      */
     public static function default_patterns() {
         $patterns = [
+            // Google analytics loaders.
             [ 'regex' => '~googletagmanager\.com/gtag/js~i',       'category' => 'analytics' ],
-            [ 'regex' => '~googletagmanager\.com/gtm\.js~i',       'category' => 'marketing' ],
             [ 'regex' => '~google-analytics\.com/analytics\.js~i', 'category' => 'analytics' ],
             [ 'regex' => '~google-analytics\.com/ga\.js~i',        'category' => 'analytics' ],
+            // Google Tag Manager container — gates everything it can load.
+            [ 'regex' => '~googletagmanager\.com/gtm\.js~i',       'category' => 'marketing' ],
+            // Marketing / advertising pixels.
+            [ 'regex' => '~connect\.facebook\.net/[^"\']*fbevents\.js~i',     'category' => 'marketing' ], // Meta / Facebook
+            [ 'regex' => '~snap\.licdn\.com/li\.lms-analytics/insight~i',     'category' => 'marketing' ], // LinkedIn Insight
+            [ 'regex' => '~analytics\.tiktok\.com/i18n/pixel/events~i',       'category' => 'marketing' ], // TikTok
+            [ 'regex' => '~bat\.bing\.com/bat\.js~i',                         'category' => 'marketing' ], // Microsoft / Bing UET
+            [ 'regex' => '~s\.pinimg\.com/ct/core~i',                         'category' => 'marketing' ], // Pinterest Tag
+            [ 'regex' => '~static\.ads-twitter\.com/uwt~i',                   'category' => 'marketing' ], // X / Twitter
         ];
         if ( defined( 'LMG_CONSENT_EXTRA_PATTERNS' ) && is_array( LMG_CONSENT_EXTRA_PATTERNS ) ) {
             foreach ( (array) LMG_CONSENT_EXTRA_PATTERNS as $p ) {

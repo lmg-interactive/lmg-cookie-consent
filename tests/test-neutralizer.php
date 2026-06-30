@@ -79,4 +79,21 @@ it( 'blocking_enabled defaults true', function () {
     assert_true( LMG_Consent_Blocker::blocking_enabled() === true );
 } );
 
+// --- marketing pixels (v1.2.1) ---
+$pixels = [
+    'Meta'      => 'https://connect.facebook.net/en_US/fbevents.js',
+    'LinkedIn'  => 'https://snap.licdn.com/li.lms-analytics/insight.min.js',
+    'TikTok'    => 'https://analytics.tiktok.com/i18n/pixel/events.js',
+    'Bing UET'  => 'https://bat.bing.com/bat.js',
+    'Pinterest' => 'https://s.pinimg.com/ct/core.js',
+    'X/Twitter' => 'https://static.ads-twitter.com/uwt.js',
+];
+foreach ( $pixels as $name => $url ) {
+    it( "neutralizes the $name pixel as marketing", function () use ( $doc, $url ) {
+        $out = neut( sprintf( $doc, '<script async src="' . $url . '"></script>' ) );
+        assert_contains( 'type="text/plain"', $out );
+        assert_contains( 'data-lmg-consent="marketing"', $out );
+    } );
+}
+
 done();

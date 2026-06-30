@@ -2,7 +2,7 @@
 /**
  * Plugin Name: LMG Consent
  * Description: Lightweight, GDPR/CPRA-ready cookie consent banner with Google Consent Mode v2 and Global Privacy Control (GPC) support. Designed to be reused across multiple sites; default palette matches M Financial Group but all colors are themeable via CSS variables.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: LawtonMG
  * Text Domain: lmg-consent
  * Requires PHP: 7.4
@@ -19,7 +19,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'LMG_CONSENT_VERSION', '1.2.0' );
+define( 'LMG_CONSENT_VERSION', '1.2.1' );
 define( 'LMG_CONSENT_PATH',    plugin_dir_path( __FILE__ ) );
 define( 'LMG_CONSENT_URL',     plugin_dir_url( __FILE__ ) );
 define( 'LMG_CONSENT_FILE',    __FILE__ );

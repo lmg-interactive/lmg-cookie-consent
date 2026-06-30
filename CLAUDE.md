@@ -15,18 +15,21 @@ via GitHub (Plugin Update Checker in `vendor/`, committed — no Composer on sit
 Storage key/cookie/option/table `m_consent` / `m_consent_settings` / `{prefix}m_consent_log`;
 events `m_consent:change` + `lmg_consent:change`; shortcodes `[m_cookie_preferences]` + `[lmg_cookie_preferences]`.
 
-## CIPA hard-blocking (v1.2.0)
+## CIPA hard-blocking (v1.2.0; pixels added v1.2.1)
 Consent Mode v2 alone does NOT satisfy CIPA: GA4 still fires cookieless pings
 (transmits IP/URL/UA) before opt-in. So `LMG_Consent_Blocker` output-buffers the
-page (`template_redirect`) and rewrites the **external Google loader** scripts
-(`gtag/js`, `gtm.js`, `analytics.js`, `ga.js`) to `type="text/plain"
-data-lmg-consent="<category>"` — browser neither fetches nor runs them. Inline
-`gtag('config',…)` is left inert (no loader = no transmission). `banner.js`
-`activateBlockedScripts()` clones each neutralized loader into a live `<script>`
-when its category is granted (on decision + on load for returning visitors;
-idempotent via `data-lmg-activated`). Blocked state is what gets cached →
-cache-safe; unblocking is per-visitor JS.
-- Category map: gtag/analytics.js/ga.js → `analytics`; gtm.js → `marketing`.
+page (`template_redirect`) and rewrites the **external tracking loader** scripts
+to `type="text/plain" data-lmg-consent="<category>"` — browser neither fetches
+nor runs them. Inline init (`gtag('config',…)`, `fbq(…)`, etc.) is left inert
+(no loader = no transmission). `banner.js` `activateBlockedScripts()` clones each
+neutralized loader into a live `<script>` when its category is granted (on
+decision + on load for returning visitors; idempotent via `data-lmg-activated`).
+Blocked state is what gets cached → cache-safe; unblocking is per-visitor JS.
+- Category map: gtag/analytics.js/ga.js → `analytics`; gtm.js + all marketing
+  pixels → `marketing`.
+- Marketing pixels matched (v1.2.1): Meta `fbevents.js`, LinkedIn
+  `insight.min.js`, TikTok `events.js`, Bing UET `bat.js`, Pinterest `core.js`,
+  X/Twitter `uwt.js`. GTM-loaded pixels are covered by the `gtm.js` block.
 - Kill switch: `define('LMG_CONSENT_BLOCKING', false)`.
 - Extra loaders: `define('LMG_CONSENT_EXTRA_PATTERNS', [['regex'=>'~…~i','category'=>'analytics']])`.
 
