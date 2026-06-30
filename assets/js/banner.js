@@ -81,6 +81,36 @@
     window.gtag('consent', 'update', update);
   }
 
+  /* ---------- reactivate CIPA-blocked loaders ---------- */
+  // Server-side, LMG_Consent_Blocker rewrote Google loader <script> tags to
+  // type="text/plain" so they neither fetched nor ran. Once the matching
+  // category is granted, clone each into a live <script> to execute it.
+  // Changing an existing script's type does NOT run it — a fresh node must be
+  // inserted (HTML spec: "already started" scripts never re-execute).
+  function activateBlockedScripts(categories) {
+    if (!categories) return;
+    var blocked = document.querySelectorAll('script[type="text/plain"][data-lmg-consent]');
+    for (var i = 0; i < blocked.length; i++) {
+      var old = blocked[i];
+      var cat = old.getAttribute('data-lmg-consent');
+      if (!categories[cat]) continue;                       // not granted
+      if (old.getAttribute('data-lmg-activated') === '1') continue; // idempotent
+      old.setAttribute('data-lmg-activated', '1');
+
+      var s = document.createElement('script');
+      for (var a = 0; a < old.attributes.length; a++) {
+        var attr = old.attributes[a];
+        if (attr.name === 'type' ||
+            attr.name === 'data-lmg-consent' ||
+            attr.name === 'data-lmg-activated') continue;
+        s.setAttribute(attr.name, attr.value);
+      }
+      s.type = 'text/javascript';
+      if (old.textContent) s.text = old.textContent;
+      (old.parentNode || document.head || document.documentElement).insertBefore(s, old);
+    }
+  }
+
   /* ---------- REST logging ---------- */
   function log(action, categories, consentId) {
     if (!CFG.logEnabled) return;
@@ -186,8 +216,10 @@
       show(root);
       applyTogglesFromCategories(defaultCategories());
     } else {
-      // Already decided — keep hidden but apply stored choices to gtag.
+      // Already decided — keep hidden but apply stored choices to gtag and
+      // reactivate any server-blocked loaders the visitor previously allowed.
       pushConsent(state.categories);
+      activateBlockedScripts(state.categories);
     }
   }
 
@@ -230,6 +262,7 @@
     };
     writeState(state);
     pushConsent(categories);
+    activateBlockedScripts(categories);
     log(action, categories, consentId);
     document.dispatchEvent(new CustomEvent('m_consent:change', { detail: state }));
     document.dispatchEvent(new CustomEvent('lmg_consent:change', { detail: state }));
