@@ -2,7 +2,7 @@
 /**
  * Plugin Name: LMG Consent
  * Description: Lightweight, GDPR/CPRA-ready cookie consent banner with Google Consent Mode v2 and Global Privacy Control (GPC) support. Designed to be reused across multiple sites; default palette matches M Financial Group but all colors are themeable via CSS variables.
- * Version: 1.1.1
+ * Version: 1.2.0
  * Author: LawtonMG
  * Text Domain: lmg-consent
  * Requires PHP: 7.4
@@ -19,13 +19,14 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'LMG_CONSENT_VERSION', '1.1.1' );
+define( 'LMG_CONSENT_VERSION', '1.2.0' );
 define( 'LMG_CONSENT_PATH',    plugin_dir_path( __FILE__ ) );
 define( 'LMG_CONSENT_URL',     plugin_dir_url( __FILE__ ) );
 define( 'LMG_CONSENT_FILE',    __FILE__ );
 
 require_once LMG_CONSENT_PATH . 'includes/class-lmg-consent.php';
 require_once LMG_CONSENT_PATH . 'includes/class-lmg-consent-log.php';
+require_once LMG_CONSENT_PATH . 'includes/class-lmg-consent-blocker.php';
 require_once LMG_CONSENT_PATH . 'includes/class-lmg-consent-admin.php';
 require_once LMG_CONSENT_PATH . 'includes/class-lmg-consent-updater.php';
 
@@ -35,6 +36,7 @@ register_deactivation_hook( __FILE__, [ 'LMG_Consent', 'unschedule_purge' ] );
 
 add_action( 'plugins_loaded', function () {
     LMG_Consent::instance();
+    LMG_Consent_Blocker::instance();
     LMG_Consent_Admin::instance();
 
     // GitHub update checker — only where updates are actually evaluated
